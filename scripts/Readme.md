@@ -1,5 +1,10 @@
 # `fetch_games_data.py`
 
+**Thanks to Github user [@dlareau](https://github.com/dlareau) for
+coming up with the original version of this script. See
+[this gist](https://gist.github.com/dlareau/c28c54937a16fdd7edac5bda9b8e936d)
+for the original implementation.**
+
 This script will call the blaseball.com/games API endpoint.
 That API returns the last event of the game in JSON format.
 The script then trims that data (there is a lot of extraneous
