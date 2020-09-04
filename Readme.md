@@ -274,23 +274,19 @@ for developing their own blaseball tool.
 
 No.
 
-This tool is a data exploration tool. It is intended to answer
-a small set of questions by looking at one data set with multiple
-filters applied.
-
-There are no tests. There is no Travis CI. There is no linting.
-This library is not a fancy espresso machine, it's a pour-over
-cone filter.
+Adding more views and more filters will make this tool more
+complicated and less fun, so if you have different questions
+about this data set, try building a tool of your own using this
+repository as a template.
 
 At the core of this program is a simple idea: bundle a data frame
 with a few filters, give the user the ability to apply different
 filters using command line flags, and pass the final data frame
 through a nice table viewer.
 
-Adding more views and more filters will make this tool more
-complicated and less fun, so if you have different questions
-about this data set, try building a tool of your own using this
-repository as a template.
+There are no tests. There is no Travis CI. There is no linting.
+This library is not a fancy espresso machine, it's a pour-over
+cone filter.
 
 
 ## Future work
