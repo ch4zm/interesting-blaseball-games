@@ -1,1 +1,1 @@
-include data/*.json
+include cli/data/*.json
