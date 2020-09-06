@@ -22,6 +22,7 @@ a series of tables containing game summaries.
 * [Quick Start](#quick-start)
     * [Command line flags](#command-line-flags)
     * [Configuration file](#configuration-file)
+* [Configuration Examples](#configuration-examples)
 * [Data](#data)
 * [Scripts](#scripts)
 * [Software architecture](#software-architecture)
@@ -291,7 +292,7 @@ cone filter.
 
 ## Future work
 
-* Build other one-off tools
+* Build other one-off tools to do the following:
 
 * Explore the 3-game series
 
