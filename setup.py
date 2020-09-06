@@ -26,7 +26,7 @@ setup(
     url='https://github.com/ch4zm/interesting-blaseball-games',
     author='Ch4zm of Hellmouth',
     author_email='ch4zm.of.hellmouth@gmail.com',
-    license='BSD-3-Clause',
+    license='MIT',
     entry_points="""
     [console_scripts]
     {program} = cli.command:main
