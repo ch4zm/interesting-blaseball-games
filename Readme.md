@@ -170,7 +170,7 @@ You can also use both a config file and command line flags; the command line fla
 precedence over config file options if a parameter is specified by both.
 
 
-## Output Format
+## Output Formats
 
 This command line utility enables output in two formats: tables formatted for the command line,
 or html (to stdout or to a file).
