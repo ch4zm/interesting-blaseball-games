@@ -65,9 +65,9 @@ class View(object):
             desc += "for all time "
         else:
             if len(options.season)==1:
-                desc += "for season %s "%("".join([str(int(j)+1) for j in options.season]))
+                desc += "for season %s "%("".join(options.season))
             else:
-                desc += "for seasons %s "%(", ".join([str(int(j)+1) for j in options.season]))
+                desc += "for seasons %s "%(", ".join(options.season))
 
         if options.postseason :
             desc += "(postseason only) "
