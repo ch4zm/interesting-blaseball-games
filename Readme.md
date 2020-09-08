@@ -22,6 +22,7 @@ a series of tables containing game summaries.
 * [Quick Start](#quick-start)
     * [Command line flags](#command-line-flags)
     * [Configuration file](#configuration-file)
+* [Output formats](#output-formats)
 * [Configuration Examples](#configuration-examples)
 * [Data](#data)
 * [Scripts](#scripts)
@@ -123,6 +124,10 @@ View options:
 * **Reason**: use the `--reason` specify a reason why a game is interesting (blowout, shutout, shame, underdog); defaults to all.
 * **Win-Loss** or **Home-Away**: `--win-loss` and `--home-away` lays out the table data as winner (left)/loser (right), or as home (left)/away (right)
 * **Winning Pitcher** and **Losing Pitcher**: `--winning-pitcher` and `--losing-pitcher` flags will include the name of the winning/losing pitcher in the table
+* **Output Format**: specify whether to format tables for the command line (default behavior, can also use the `--rich` flag)
+  or as HTML (use the `--html` flag to specify HTML output format, and `--output` to specify an output file).
+* **Output File**: specify the output file for HTML code using the `--output` flag (can only be used with the
+  `--html` flag, ignored otherwise). This flag is optional, if left out the HTML will be dumped to stdout.
 
 Using a configuration file:
 
@@ -163,6 +168,17 @@ This would produce identical output to the command with all the flags.
 
 You can also use both a config file and command line flags; the command line flags will take
 precedence over config file options if a parameter is specified by both.
+
+
+## Output Format
+
+This command line utility enables output in two formats: tables formatted for the command line,
+or html (to stdout or to a file).
+
+By default the tool will print tables formatted for the command line. However, if the
+`--html` flag is added, the tool will dump out the tables in HTML format using the
+pandas DataFrame function `to_html()` under the hood. If the `--output` flag specifies
+a filename, the HTML for all the tables is in that file.
 
 
 ## Configuration Examples
@@ -229,6 +245,18 @@ reason = blowout
 n-results = 15
 win-loss = true
 losing-pitcher = true
+```
+
+Repeat the above command, but output the results as HTML to the file `alltime_blowouts.html`:
+
+```
+[view]
+reason = blowout
+n-results = 15
+win-loss = true
+losing-pitcher = true
+html
+output = alltime_blowouts.html
 ```
 
 ## Data
