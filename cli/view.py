@@ -3,7 +3,10 @@ import os
 from rich.console import Console
 from rich.table import Table
 from .game_data import GameData
-from .util import sanitize_dale
+from .util import (
+    sanitize_dale,
+    get_league_division_team_data
+)
 
 
 NAMESTYLE_CHOICES = ['long', 'short', 'emoji']
@@ -20,6 +23,9 @@ class View(object):
         self.column_headers, self.nice_column_headers = self.assemble_column_headers(options)
         self.name_style = options.name_style
         self.html = options.html
+
+        # For table description
+        self.options = options
 
         if options.output == '':
             self.output_file = None
@@ -39,6 +45,52 @@ class View(object):
     def make_table(self):
         """Virtual method to make table(s)"""
         raise NotImplementedError("View class is a base class, do not call it directly")
+
+    def table_description(self, reason):
+        """
+        Create table descriptions for each table, customizing
+        based on filters the user provides
+        """
+        options = self.options
+        if reason == 'blowout':
+            desc = "Blowout games (games with high scores and high run differentials) "
+        elif reason == 'shutout':
+            desc = "Shutout games (games where the loser had zero runs) "
+        elif reason == 'shame':
+            desc = "Shame games (games where the loser was shamed) "
+        elif reason == 'underdog':
+            desc = "Underdog games (games where the underdog won with large run differential) "
+
+        if options.season == 'all':
+            desc += "for all time "
+        else:
+            if len(options.season)==1:
+                desc += "for season %s "%("".join([str(int(j)+1) for j in options.season]))
+            else:
+                desc += "for seasons %s "%(", ".join([str(int(j)+1) for j in options.season]))
+
+        if options.postseason :
+            desc += "(postseason only) "
+
+        # Remember: ALLTEAMS is sanitized for the command line
+        _, _, ALLTEAMS = get_league_division_team_data()
+        if options.html:
+            # Need to sanitize Dale team name for html
+            if len(options.team)==1:
+                desc += "for team %s"%("".join([sanitize_dale(j) for j in options.team]))
+            elif len(set([sanitize_dale(j) for j in options.team]) - set(ALLTEAMS)) == 0:
+                desc += "for all teams"
+            else:
+                desc += "for teams %s"%(", ".join([sanitize_dale(j) for j in options.team]))
+        else:
+            if len(options.team)==1:
+                desc += "for team %s"%("".join(options.team))
+            elif len(set([sanitize_dale(j) for j in options.team]) - set(ALLTEAMS)) == 0:
+                desc += "for all teams"
+            else:
+                desc += "for teams %s"%(", ".join(options.team))
+
+        return desc
 
     def assemble_column_headers(self, options):
         """
@@ -147,7 +199,8 @@ class HtmlView(View):
     def make_table(self):
         tables = self.game_data.parse()
         for table in tables:
-            desc, df = table
+            reason, df = table
+            desc = self.table_description(reason)
             cut = df[self.column_headers][:min(len(df), self.nresults)].copy()
 
             # Bump season and game numbers by one (zero-indexed in dataframe)
@@ -213,7 +266,8 @@ class RichView(View):
         # Get list of [(description, dataframe)] tuples
         tables = self.game_data.parse()
         for table in tables:
-            desc, df = table
+            reason, df = table
+            desc = self.table_description(reason)
             self._render_table(desc, df)
 
     def _render_table(self, description, df):
@@ -267,6 +321,6 @@ class RichView(View):
 
         console.print(table)
         console.print("\n")
-        console.print(description)
+        print(description)
         console.print("\n\n")
 
