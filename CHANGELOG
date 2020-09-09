@@ -1,4 +1,8 @@
-# v.06
+# v0.7
+
+* Bug fix with variable
+
+# v0.6
 
 * Includes an `--html` CLI option to output table in HTML format
 * Fixes table descriptions to include information about the particular team/season/etc.
