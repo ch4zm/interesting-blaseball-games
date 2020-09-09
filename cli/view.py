@@ -85,7 +85,7 @@ class View(object):
         else:
             if len(options.team)==1:
                 desc += "for team %s"%("".join(options.team))
-            elif len(set(ALL_TEAMS) - set([sanitize_dale(j) for j in options.team])) == 0:
+            elif len(set(ALLTEAMS) - set([sanitize_dale(j) for j in options.team])) == 0:
                 desc += "for all teams"
             else:
                 desc += "for teams %s"%(", ".join(options.team))
