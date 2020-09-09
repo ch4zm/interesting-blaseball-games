@@ -27,6 +27,7 @@ class View(object):
         # For table description
         self.options = options
 
+        # If an output file is specified, check if it exists and if the path to it exists
         if options.output == '':
             self.output_file = None
         else:
@@ -35,6 +36,7 @@ class View(object):
                 print("WARNING: Overwriting an existing file %s"%(self.output_file))
                 print("Waiting 5 seconds before proceeding")
                 time.sleep(5)
+                # Clear out the file
                 with open(self.output_file, 'w') as f:
                     f.write("")
             else:
@@ -72,7 +74,7 @@ class View(object):
         if options.postseason :
             desc += "(postseason only) "
 
-        # Remember: ALLTEAMS is sanitized for the command line
+        # Remember: ALLTEAMS is sanitized for the command line, options.teams is desanitized (contains unicode)
         _, _, ALLTEAMS = get_league_division_team_data()
         if options.html:
             # Need to sanitize Dale team name for html
@@ -329,6 +331,7 @@ class MarkdownView(View):
     """
     Create a table and render it as a Markdown table
     """
+    # TODO: integrate some of the shared rich/markdown view functionality
     def make_table(self):
         """
         Get list of DataFrames and descriptions,
@@ -400,8 +403,18 @@ class MarkdownView(View):
             table += table_row
             table += "\n"
 
-        print("\n\n")
-        print(description)
-        print("\n")
-        print(table)
+        # TODO
+        # Something something, DRY
+        # Something something, more pythonic
+        if self.output_file is None:
+            print("\n\n")
+            print(description)
+            print("\n")
+            print(table)
+        else:
+            with open(self.output_file, 'a') as f:
+                f.write("\n\n")
+                f.write(description)
+                f.write("\n")
+                f.write(table)
 
