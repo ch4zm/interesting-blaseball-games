@@ -22,6 +22,7 @@ class View(object):
         self.game_data = GameData(options)
         self.column_headers, self.nice_column_headers = self.assemble_column_headers(options)
         self.name_style = options.name_style
+        self.teams = options.team  # not sanitized - contain unicode
         self.html = options.html
 
         # For table description
@@ -76,21 +77,20 @@ class View(object):
 
         # Remember: ALLTEAMS is sanitized for the command line, options.teams is desanitized (contains unicode)
         _, _, ALLTEAMS = get_league_division_team_data()
-        if options.html:
-            # Need to sanitize Dale team name for html
-            if len(options.team)==1:
-                desc += "for team %s"%("".join([sanitize_dale(j) for j in options.team]))
-            elif len(set(ALLTEAMS) - set([sanitize_dale(j) for j in options.team])) == 0:
-                desc += "for all teams"
-            else:
-                desc += "for teams %s"%(", ".join([sanitize_dale(j) for j in options.team]))
+
+        # Sanitize unicode for comparison to ALLTEAMS
+        # self.teams contains unicode for printing
+        # teams is sanitized for comparison
+        teams = [sanitize_dale(t) for t in self.teams]
+
+        # Use the sanitized team names for comparison
+        if len(self.team) == 1:
+            # Use the desanitized team names for printing
+            desc += "for the %s"%("".join(self.teams))
+        elif len(set(ALLTEAMS) - set(teams)) == 0:
+            desc += "for all teams"
         else:
-            if len(options.team)==1:
-                desc += "for team %s"%("".join(options.team))
-            elif len(set(ALLTEAMS) - set([sanitize_dale(j) for j in options.team])) == 0:
-                desc += "for all teams"
-            else:
-                desc += "for teams %s"%(", ".join(options.team))
+            desc += "for the %s"%(", ".join(self.teams))
 
         return desc
 
@@ -217,16 +217,17 @@ class HtmlView(View):
             new_postseason_column = cut['isPostseason'].apply(postseason_lambda)
             cut = cut.assign(**{'isPostseason': new_postseason_column.values})
 
-            # Sanitize Dale uicode for HTML
-            name_cols = [
-                'winningTeamName', 'winningTeamNickname', 
-                'losingTeamName', 'losingTeamNickname',
-                'homeTeamName', 'homeTeamNickname',
-                'awayTeamName', 'awayTeamNickname'
-            ]
-            for name_col in name_cols:
-                if name_col in cut.columns:
-                    cut[name_col] = cut[name_col].apply(sanitize_dale)
+            # If you don't have the right HTML head tag, the unicode won't display.
+            # To print names without unicode, uncomment the block below:
+            ### name_cols = [
+            ###     'winningTeamName', 'winningTeamNickname', 
+            ###     'losingTeamName', 'losingTeamNickname',
+            ###     'homeTeamName', 'homeTeamNickname',
+            ###     'awayTeamName', 'awayTeamNickname'
+            ### ]
+            ### for name_col in name_cols:
+            ###     if name_col in cut.columns:
+            ###         cut[name_col] = cut[name_col].apply(sanitize_dale)
 
             # Make everything in the dataframe a string
             cut = cut.applymap(str)
@@ -234,6 +235,8 @@ class HtmlView(View):
             # Rename df columns
             ren = {k: v for k, v in zip(self.column_headers, self.nice_column_headers)}
             cut.rename(columns = ren, inplace=True)
+
+            # -----
 
             result = cut.to_html(justify='center', border=1, index=False)
             if self.output_file is None:
@@ -301,6 +304,8 @@ class RichView(View):
 
         # Make everything in the dataframe a string
         cut = cut.applymap(str)
+
+        # -----
 
         console = Console()
 
@@ -373,6 +378,8 @@ class MarkdownView(View):
         # Make everything in the dataframe a string
         cut = cut.applymap(str)
 
+        # -----
+
         # This string is the final table in Markdown format
         table = ""
 
@@ -411,10 +418,14 @@ class MarkdownView(View):
             print(description)
             print("\n")
             print(table)
+            print("\n")
+            print("\nNote: all days and seasons displayed are 1-indexed.")
         else:
             with open(self.output_file, 'a') as f:
                 f.write("\n\n")
                 f.write(description)
                 f.write("\n")
                 f.write(table)
+                f.write("\n")
+                f.write("\nNote: all days and seasons displayed are 1-indexed.")
 
