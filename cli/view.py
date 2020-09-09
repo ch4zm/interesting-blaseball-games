@@ -78,14 +78,14 @@ class View(object):
             # Need to sanitize Dale team name for html
             if len(options.team)==1:
                 desc += "for team %s"%("".join([sanitize_dale(j) for j in options.team]))
-            elif len(set([sanitize_dale(j) for j in options.team]) - set(ALLTEAMS)) == 0:
+            elif len(set(ALLTEAMS) - set([sanitize_dale(j) for j in options.team])) == 0:
                 desc += "for all teams"
             else:
                 desc += "for teams %s"%(", ".join([sanitize_dale(j) for j in options.team]))
         else:
             if len(options.team)==1:
                 desc += "for team %s"%("".join(options.team))
-            elif len(set([sanitize_dale(j) for j in options.team]) - set(ALLTEAMS)) == 0:
+            elif len(set(ALL_TEAMS) - set([sanitize_dale(j) for j in options.team])) == 0:
                 desc += "for all teams"
             else:
                 desc += "for teams %s"%(", ".join(options.team))
