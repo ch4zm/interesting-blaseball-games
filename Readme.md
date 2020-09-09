@@ -124,10 +124,11 @@ View options:
 * **Reason**: use the `--reason` specify a reason why a game is interesting (blowout, shutout, shame, underdog); defaults to all.
 * **Win-Loss** or **Home-Away**: `--win-loss` and `--home-away` lays out the table data as winner (left)/loser (right), or as home (left)/away (right)
 * **Winning Pitcher** and **Losing Pitcher**: `--winning-pitcher` and `--losing-pitcher` flags will include the name of the winning/losing pitcher in the table
-* **Output Format**: specify whether to format tables for the command line (default behavior, can also use the `--rich` flag)
-  or as HTML (use the `--html` flag to specify HTML output format, and `--output` to specify an output file).
-* **Output File**: specify the output file for HTML code using the `--output` flag (can only be used with the
-  `--html` flag, ignored otherwise). This flag is optional, if left out the HTML will be dumped to stdout.
+* **Output Format**: Specify an output format for the tables:
+    * **Rich**: add the `--rich` flag to print the tables formatted for the console using rich, a Python formatting library (this is the default behavior)
+    * **HTML**: add the `--html` flag to output the tables as HTML tables
+    * **Markdown**: add the `--markdown` flag to output the tables as Markdown tables
+* **Output file**: (optional) use the `--output` flag to specify an output file when using `--html` or `--markdown` (if left out, HTML and Markdown are printed to the console)
 
 Using a configuration file:
 
