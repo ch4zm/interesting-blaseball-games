@@ -172,13 +172,18 @@ precedence over config file options if a parameter is specified by both.
 
 ## Output Formats
 
-This command line utility enables output in two formats: tables formatted for the command line,
-or html (to stdout or to a file).
+This command line utility enables output in three formats: tables formatted for the command line,
+html (to stdout or to a file), or markdown tables (to stdout or to a file).
 
-By default the tool will print tables formatted for the command line. However, if the
-`--html` flag is added, the tool will dump out the tables in HTML format using the
+By default, the tool will print tables formatted for the command line.
+
+If the `--html` flag is added, the tool will dump out the tables in HTML format using the
 pandas DataFrame function `to_html()` under the hood. If the `--output` flag specifies
 a filename, the HTML for all the tables is in that file.
+
+If the `--markdown` flag is added, the tool will dump out tables in a format suitable for
+Markdown documents. If the `--output` flag specifies a filename, the Markdown for the tables
+will be in that file.
 
 
 ## Configuration Examples
@@ -257,6 +262,18 @@ win-loss = true
 losing-pitcher = true
 html
 output = alltime_blowouts.html
+```
+
+Repeat the above command, but output the results as Markdown to the file `alltime_blowouts.md`:
+
+```
+[view]
+reason = blowout
+n-results = 15
+win-loss = true
+losing-pitcher = true
+markdown
+output = alltime_blowouts.md
 ```
 
 ## Data
