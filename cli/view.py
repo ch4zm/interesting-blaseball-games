@@ -231,7 +231,7 @@ class HtmlView(View):
 
             # Rename df columns
             ren = {k: v for k, v in zip(self.column_headers, self.nice_column_headers)}
-            cut.rename(columns = ren)
+            cut.rename(columns = ren, inplace=True)
 
             result = cut.to_html(justify='center', border=1, index=False)
             if self.output_file is None:
