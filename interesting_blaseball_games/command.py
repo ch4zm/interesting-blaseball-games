@@ -113,11 +113,11 @@ def main(sysargs = sys.argv[1:]):
     p.add('--html',
           action='store_true',
           default=False,
-          help='Print streak data in HTML table format')
+          help='Print data in HTML table format')
     p.add('--markdown',
           action='store_true',
           default=False,
-          help='Print streak data in Markdown table format')
+          help='Print data in Markdown table format')
     p.add('--output',
           required=False,
           type=str,
@@ -156,7 +156,6 @@ def main(sysargs = sys.argv[1:]):
     # Parse arguments
     options = p.parse_args(sys.argv[1:])
 
-    # -----
     # If the user asked for the version,
     # print the version number and exit.
     if options.version:
@@ -164,7 +163,6 @@ def main(sysargs = sys.argv[1:]):
         print(_program, __version__)
         sys.exit(0)
 
-    # -----
     # If the user specified a division or a league,
     # turn that into a list of teams for them
     if options.division:
