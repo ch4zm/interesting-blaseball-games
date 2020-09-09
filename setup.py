@@ -13,14 +13,14 @@ with open(path.join(this_directory, 'Readme.md'), encoding='utf-8') as f:
 
 # Note: the _program variable is set in __init__.py.
 # it determines the name of the package/final command line tool.
-from cli import __version__, _program
+from interesting_blaseball_games import __version__, _program
 
 setup(
     name=_program,
     version=__version__,
-    packages=['cli'],
+    packages=['interesting_blaseball_games'],
     package_data = {
-      'cli': ['data/*.json']
+      'interesting_blaseball_games': ['data/*.json']
     },
     description='interesting-blaseball-games, a command line interface for finding interesting blaseball games',
     url='https://github.com/ch4zm/interesting-blaseball-games',
@@ -29,7 +29,7 @@ setup(
     license='MIT',
     entry_points="""
     [console_scripts]
-    {program} = cli.command:main
+    {program} = interesting_blaseball_games.command:main
     """.format(program = _program),
     install_requires=required,
     keywords=[],
