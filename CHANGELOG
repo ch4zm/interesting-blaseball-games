@@ -1,5 +1,6 @@
-# v0.7
+# v0.8
 
+* Rename source code directory from "cli" to "interesting_blaseball_games" to avoid conflicts
 * Bug fix with variable
 
 # v0.6
