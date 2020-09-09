@@ -1,3 +1,8 @@
+# v.06
+
+* Includes an `--html` CLI option to output table in HTML format
+* Fixes table descriptions to include information about the particular team/season/etc.
+
 # v0.5
 
 * Includes seasons 1-5 in the game data

@@ -2,13 +2,20 @@ import sys
 import os
 import json
 import configargparse
-from .view import NAMESTYLE_CHOICES, View
+from .view import NAMESTYLE_CHOICES, HtmlView, RichView
 from .game_data import REASON2FUNCTION
-from . import _program
+from .util import (
+    root_path, 
+    data_path,
+    sanitize_dale,
+    desanitize_dale,
+    get_league_division_team_data,
+    league_to_teams,
+    division_to_teams
+)
 
 
-logo = r"""
-
+"""
  ____  _  _  ____                                                 
 (_  _)/ )( \(  __)                                                
   )(  ) __ ( ) _)                                                 
@@ -26,18 +33,7 @@ logo = r"""
 /    \  ( (_ \ )   / ) _) /    \ )(    / \) \(  O )) _ (          
 \_/\_/   \___/(__\_)(____)\_/\_/(__)   \____/ \__/(____/ 
 
-
 """
-
-
-root_path = os.path.abspath(os.path.join(os.path.dirname(__file__)))
-data_path = os.path.abspath(os.path.join(root_path, 'data'))
-
-GAMES_DATA_JSON = os.path.join(data_path, "games_data_trim.json")
-TEAMS_DATA_JSON = os.path.join(data_path, "teams_data.json")
-
-DALE_SAFE = "Dale" # for command line
-DALE_UTF8 = "Dal\u00e9" # for display
 
 
 def main(sysargs = sys.argv[1:]):
@@ -102,6 +98,21 @@ def main(sysargs = sys.argv[1:]):
           action='store_true',
           help='include losing pitcher in columns displayed')
 
+    # Output format
+    p.add('--rich',
+          action='store_true',
+          default=True,
+          help='Print data using rich to format tables (default)')
+    p.add('--html',
+          action='store_true',
+          default=False,
+          help='Print streak data in HTML format')
+    p.add('--output',
+          required=False,
+          type=str,
+          default='',
+          help='Specify the name of the HTML output file, for use with --html flag')
+
     # View options for columns
     g = p.add_mutually_exclusive_group()
     g.add('--win-loss',
@@ -159,62 +170,14 @@ def main(sysargs = sys.argv[1:]):
         options.season = ['all']
 
     # No more user input required, so convert Dale back to utf8
-    options.team = [DALE_UTF8 if x==DALE_SAFE else x for x in options.team]
+    options.team = [desanitize_dale(x) for x in options.team]
 
-    v = View(options)
-    v.make_table()
-
-
-def get_league_division_team_data():
-    """
-    Get a list of leagues, divisions, and teams.
-    This is for use in creating CLI flag values,
-    so we replace Dal\u00e9 with Dale.
-    """
-    with open(TEAMS_DATA_JSON, 'r') as f:
-        td = json.load(f)
-    leagues = sorted(list(td['leagues'].keys()))
-    divisions = sorted(list(td['divisions'].keys()))
-    teams = []
-    for league in leagues:
-        teams += td['leagues'][league]
-    teams = sorted(list(teams))
-    teams = [_sanitize_dale(s) for s in teams]
-    return (leagues, divisions, teams)
-
-
-def league_to_teams(league):
-    """
-    For a given league, return a list of all teams in that league.
-    We replace Dal\u00e9 with Dale (see above).
-    """
-    with open(TEAMS_DATA_JSON, 'r') as f:
-        td = json.load(f)
-    teams = []
-    teams += td['leagues'][league]
-    teams = [_sanitize_dale(s) for s in teams]
-    return teams
-
-
-def division_to_teams(division):
-    """
-    For a given division, return a list of all teams in that league.
-    We replace Dal\u00e9 with Dale (see above).
-    """
-    with open(TEAMS_DATA_JSON, 'r') as f:
-        td = json.load(f)
-    teams = []
-    teams += td['divisions'][division]
-    teams = [_sanitize_dale(s) for s in teams]
-    return teams
-
-
-def _sanitize_dale(s):
-    """Utility function to make CLI flag value easier to set"""
-    if s == DALE_UTF8:
-        return DALE_SAFE
+    if options.html:
+        v = HtmlView(options)
+        v.make_table()
     else:
-        return s
+        v = RichView(options)
+        v.make_table()
 
 
 if __name__ == '__main__':
