@@ -1,3 +1,9 @@
+# v0.9
+
+* Readme update 
+* Add a version flag
+* Add a markdown output format
+
 # v0.8
 
 * Rename source code directory from "cli" to "interesting_blaseball_games" to avoid conflicts
