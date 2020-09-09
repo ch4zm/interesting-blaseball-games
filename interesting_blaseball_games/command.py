@@ -2,7 +2,7 @@ import sys
 import os
 import json
 import configargparse
-from .view import NAMESTYLE_CHOICES, HtmlView, RichView
+from .view import NAMESTYLE_CHOICES, HtmlView, RichView, MarkdownView
 from .game_data import REASON2FUNCTION
 from .util import (
     root_path, 
@@ -42,6 +42,13 @@ def main(sysargs = sys.argv[1:]):
 
     # These are safe for command line usage (no accent in Dale)
     LEAGUES, DIVISIONS, ALLTEAMS = get_league_division_team_data()
+
+    p.add('-v',
+          '--version',
+          required=False,
+          default=False,
+          action='store_true',
+          help='Print program name and version number and exit')
 
     p.add('-c',
           '--config',
@@ -106,12 +113,16 @@ def main(sysargs = sys.argv[1:]):
     p.add('--html',
           action='store_true',
           default=False,
-          help='Print streak data in HTML format')
+          help='Print streak data in HTML table format')
+    p.add('--markdown',
+          action='store_true',
+          default=False,
+          help='Print streak data in Markdown table format')
     p.add('--output',
           required=False,
           type=str,
           default='',
-          help='Specify the name of the HTML output file, for use with --html flag')
+          help='Specify the name of the HTML or Markdown output file, for use with --html or --markdown flags')
 
     # View options for columns
     g = p.add_mutually_exclusive_group()
@@ -146,6 +157,14 @@ def main(sysargs = sys.argv[1:]):
     options = p.parse_args(sys.argv[1:])
 
     # -----
+    # If the user asked for the version,
+    # print the version number and exit.
+    if options.version:
+        from . import _program, __version__
+        print(_program, __version__)
+        sys.exit(0)
+
+    # -----
     # If the user specified a division or a league,
     # turn that into a list of teams for them
     if options.division:
@@ -174,6 +193,9 @@ def main(sysargs = sys.argv[1:]):
 
     if options.html:
         v = HtmlView(options)
+        v.make_table()
+    elif options.markdown:
+        v = MarkdownView(options)
         v.make_table()
     else:
         v = RichView(options)

@@ -263,7 +263,7 @@ class RichView(View):
         Get a list of DataFrames and descriptions, 
         and render them as tables with rich.
         """
-        # Get list of [(description, dataframe)] tuples
+        # Get dataframes and descriptions
         tables = self.game_data.parse()
         for table in tables:
             reason, df = table
@@ -323,4 +323,85 @@ class RichView(View):
         console.print("\n")
         print(description)
         console.print("\n\n")
+
+
+class MarkdownView(View):
+    """
+    Create a table and render it as a Markdown table
+    """
+    def make_table(self):
+        """
+        Get list of DataFrames and descriptions,
+        and render each one as Markdown table
+        """
+        tables = self.game_data.parse()
+        for table in tables:
+            reason, df = table
+            desc = self.table_description(reason)
+            self._render_table(desc, df)
+
+    def _render_table(self, description, df):
+        """
+        Render a table as a Markdown table
+        """
+        # Cut data to table data only
+        cut = df[self.column_headers][:min(len(df), self.nresults)].copy()
+
+        # Bump season and game numbers by one (zero-indexed in dataframe)
+        # (Pandas is soooo intuitive)
+        plusone = lambda x : x + 1
+        new_season_column = cut['season'].apply(plusone)
+        new_game_column = cut['day'].apply(plusone)
+        cut = cut.assign(**{'season': new_season_column, 'day': new_game_column})
+
+        # Format the isPostseason column for printing (empty space if not, else Y)
+        postseason_lambda = lambda c: ' ' if c is False else 'Y'
+        new_postseason_column = cut['isPostseason'].apply(postseason_lambda)
+        cut = cut.assign(**{'isPostseason': new_postseason_column.values})
+
+        # Format any column ending in "Emoji" as emoji (hope this works!)
+        # (there must be a more efficient way to do this, but I really, really hate pandas now.)
+        for column_header in self.column_headers:
+            emoji_lambda = lambda x: chr(int(x, 16))
+            if column_header[-5:]=='Emoji':
+                new_column = cut[column_header].apply(emoji_lambda)
+                cut = cut.assign(**{column_header: new_column})
+
+        # Make everything in the dataframe a string
+        cut = cut.applymap(str)
+
+        # This string is the final table in Markdown format
+        table = ""
+
+        # Start header line
+        table_header = "| "
+        # Start separator line (controls alignment)
+        table_sep = "| "
+        for column_header, nice_column_header in zip(self.column_headers, self.nice_column_headers):
+            table_header += "%s | "%(nice_column_header)
+            if column_header=="losingScore" or column_header=="awayScore":
+                # Justify losing/away scores to the right (opposite winning/home scores)
+                table_sep += "------: | "
+            elif self.name_style=="emoji" and column_header[-5:]=="Emoji":
+                # Center emoji team name columns
+                table_sep += ":------: | "
+            else:
+                table_sep += "------ |"
+
+        table += table_header
+        table += "\n"
+        table += table_sep
+        table += "\n"
+
+        for i, row in cut.iterrows():
+            table_row = "| "
+            for val in row.values:
+                table_row += "%s | "%(str(val))
+            table += table_row
+            table += "\n"
+
+        print("\n\n")
+        print(description)
+        print("\n")
+        print(table)
 
