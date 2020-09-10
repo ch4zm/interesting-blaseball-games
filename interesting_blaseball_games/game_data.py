@@ -92,7 +92,6 @@ class GameData(object):
         """Add any additional columns we want as part of the View class"""
         # Add the score: homeAwayScore and winningLosingScore
         wl_score_lambda = lambda x: "%d - %d"%(x['winningScore'], x['losingScore'])
-        import pdb; pdb.set_trace()
         wl_score_col = self.df[['winningScore', 'losingScore']].apply(wl_score_lambda, axis=1)
         self.df = self.df.assign(**{'winningLosingScore': wl_score_col.values})
 
