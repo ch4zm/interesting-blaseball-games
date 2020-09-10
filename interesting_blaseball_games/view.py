@@ -132,13 +132,9 @@ class View(object):
                 column_names.append('winningTeamEmoji')
             nice_column_names.append("Winner")
 
-            # Winning team score
-            column_names.append('winningScore')
-            nice_column_names.append("WR")
-
-            # Losing team score
-            column_names.append('losingScore')
-            nice_column_names.append("LR")
+            # Score
+            column_names.append('winningLosingScore')
+            nice_column_names.append("Score")
 
             # Losing team name
             if options.name_style=='long':
@@ -170,13 +166,9 @@ class View(object):
                 column_names.append('homeTeamEmoji')
             nice_column_names.append("Home")
 
-            # Home team score
-            column_names.append('homeScore')
-            nice_column_names.append("HR")
-
-            # Away team score
-            column_names.append('awayScore')
-            nice_column_names.append("AR")
+            # Score
+            column_names.append('homeAwayScore')
+            nice_column_names.append("Score")
 
             # Away team name
             if options.name_style=='long':
