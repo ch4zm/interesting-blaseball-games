@@ -92,12 +92,13 @@ class GameData(object):
         """Add any additional columns we want as part of the View class"""
         # Add the score: homeAwayScore and winningLosingScore
         wl_score_lambda = lambda x: "%d - %d"%(x['winningScore'], x['losingScore'])
-        wl_score_col = self.df[['winningScore', 'losingScore']].apply(wl_score_lambda)
-        self.df = self.df.apply(**{'winningLosingScore': wl_score_col.values})
+        import pdb; pdb.set_trace()
+        wl_score_col = self.df[['winningScore', 'losingScore']].apply(wl_score_lambda, axis=1)
+        self.df = self.df.assign(**{'winningLosingScore': wl_score_col.values})
 
         ha_score_lambda = lambda x: "%d - %d"%(x['homeScore'], x['awayScore'])
-        ha_score_col = self.df[['homeScore', 'awayScore']].apply(ha_score_lambda)
-        self.df = self.df.apply(**{'homeAwayScore': ha_score_col.values})
+        ha_score_col = self.df[['homeScore', 'awayScore']].apply(ha_score_lambda, axis=1)
+        self.df = self.df.assign(**{'homeAwayScore': ha_score_col.values})
 
     def _filter_ties(self):
         mask = self.df.loc[self.df['homeScore']!=self.df['awayScore']]
