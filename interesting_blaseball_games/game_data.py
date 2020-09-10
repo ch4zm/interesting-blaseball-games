@@ -74,6 +74,9 @@ class GameData(object):
         else:
             raise FileNotFoundError("Missing game data file: %s"%(GAMES_DATA_JSON))
 
+        # Save options
+        self.options = options
+
         # Drop tie games
         self.df = self._filter_ties()
 
@@ -81,7 +84,20 @@ class GameData(object):
         self.df = self._season_filter_df(options.season)
         self.df = self._postseason_filter_df(options.postseason)
         self.df = self._team_filter_df(options.team)
-        self.reason = options.reason
+
+        # Add new columns
+        self._add_columns()
+
+    def _add_columns(self):
+        """Add any additional columns we want as part of the View class"""
+        # Add the score: homeAwayScore and winningLosingScore
+        wl_score_lambda = lambda x: "%d - %d"%(x['winningScore'], x['losingScore'])
+        wl_score_col = self.df[['winningScore', 'losingScore']].apply(wl_score_lambda)
+        self.df = self.df.apply(**{'winningLosingScore': wl_score_col.values})
+
+        ha_score_lambda = lambda x: "%d - %d"%(x['homeScore'], x['awayScore'])
+        ha_score_col = self.df[['homeScore', 'awayScore']].apply(ha_score_lambda)
+        self.df = self.df.apply(**{'homeAwayScore': ha_score_col.values})
 
     def _filter_ties(self):
         mask = self.df.loc[self.df['homeScore']!=self.df['awayScore']]
@@ -126,7 +142,7 @@ class GameData(object):
         Returns:
         List of tuples [(string description, dataframe table data)]
         """
-        reason = self.reason
+        reason = self.options.reason
         result = []
         r2f = REASON2FUNCTION
         if reason in r2f.keys():
