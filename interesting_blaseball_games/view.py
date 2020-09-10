@@ -63,7 +63,7 @@ class View(object):
         elif reason == 'underdog':
             desc = "Underdog games (games where the underdog won with large run differential) "
 
-        if options.season == 'all':
+        if 'all' in options.season:
             desc += "for all time "
         else:
             if len(options.season)==1:
@@ -92,6 +92,7 @@ class View(object):
             else:
                 desc += "for teams %s"%(", ".join(options.team))
 
+        desc += " (note: all days and seasons displayed are 1-indexed, asterisk indicates a postseason game)"
         return desc
 
     def assemble_column_headers(self, options):
@@ -111,7 +112,7 @@ class View(object):
         (pitcher columns are optional)
         """
         column_names = ['season', 'day', 'isPostseason']
-        nice_column_names = ["Seas", "Day", "Post"]
+        nice_column_names = ["Sea", "Day", "Post"]
 
         # Next columns will be winner/loser or home/away,
         # depending on the win_loss vs home_away options.
@@ -133,11 +134,11 @@ class View(object):
 
             # Winning team score
             column_names.append('winningScore')
-            nice_column_names.append("Runs")
+            nice_column_names.append("WR")
 
             # Losing team score
             column_names.append('losingScore')
-            nice_column_names.append("Runs")
+            nice_column_names.append("LR")
 
             # Losing team name
             if options.name_style=='long':
@@ -171,11 +172,11 @@ class View(object):
 
             # Home team score
             column_names.append('homeScore')
-            nice_column_names.append("Runs")
+            nice_column_names.append("HR")
 
             # Away team score
             column_names.append('awayScore')
-            nice_column_names.append("Runs")
+            nice_column_names.append("AR")
 
             # Away team name
             if options.name_style=='long':
@@ -247,13 +248,6 @@ class HtmlView(View):
                     f.write("<br />\n")
                     f.write(result)
                     f.write("<br /><br />\n")
-
-        if self.output_file is None:
-            print("<p>Note: all days and seasons displayed are 1-indexed.</p>")
-        else:
-            with open(self.output_file, 'a') as f:
-                f.write("\n<p>Note: all days and seasons displayed are 1-indexed.</p>\n")
-            print("Wrote table HTML to file: %s"%(self.output_file))
 
 
 class RichView(View):
@@ -358,7 +352,7 @@ class MarkdownView(View):
         cut = cut.assign(**{'season': new_season_column, 'day': new_game_column})
 
         # Format the isPostseason column for printing (empty space if not, else Y)
-        postseason_lambda = lambda c: ' ' if c is False else 'Y'
+        postseason_lambda = lambda c: '' if c is False else '*'
         new_postseason_column = cut['isPostseason'].apply(postseason_lambda)
         cut = cut.assign(**{'isPostseason': new_postseason_column.values})
 
@@ -381,6 +375,8 @@ class MarkdownView(View):
         # Start separator line (controls alignment)
         table_sep = "| "
         for column_header, nice_column_header in zip(self.column_headers, self.nice_column_headers):
+            if column_header == 'isPostseason':
+                continue
             table_header += "%s | "%(nice_column_header)
             if column_header=="losingScore" or column_header=="awayScore":
                 # Justify losing/away scores to the right (opposite winning/home scores)
@@ -398,8 +394,13 @@ class MarkdownView(View):
 
         for i, row in cut.iterrows():
             table_row = "| "
-            for val in row.values:
-                table_row += "%s | "%(str(val))
+            for k, val in zip(row.keys(), row.values):
+                if k == 'isPostseason':
+                    continue
+                elif k == 'day':
+                    table_row += "%s%s | "%(str(val), row['isPostseason'])
+                else:
+                    table_row += "%s | "%(str(val))
             table += table_row
             table += "\n"
 
