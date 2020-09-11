@@ -280,24 +280,7 @@ output = alltime_blowouts.md
 ## Data
 
 The data set used by this tool comes from `blaseball.com`'s `/games` API endpoint.
-The data set is stored in the json file `cli/data/games_data_trim.json`.
-
-
-## Scripts
-
-This repo includes a script to download game data and reproduce the data set.
-The script is intelligent enough to keep track of what days have already been
-downloaded, so the first time through it will re-download all game data, but 
-from that point forward it will only download game data that has been added
-since the last time it was run.
-
-To run the script:
-
-```
-python scripts/fetch_game_data.py
-```
-
-See the [scripts Readme](scripts/Readme.md) for more info.
+The data set is imported from [`blaseball-core-game-data`](https://githib.com/ch4zm/blaseball-core-game-data).
 
 
 ## Software architecture
