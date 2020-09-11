@@ -35,7 +35,7 @@ def shame(df):
     """
     reason = 'shame'
     filt = df.loc[df['shame']==True]
-    filt = filt.sort_values('runDiff', ascending=False)
+    filt = filt.sort_values(['runDiff', 'winningScore'], ascending=[False, False])
     return (reason, filt)
 
 
@@ -47,7 +47,7 @@ def underdog(df):
     """
     reason = 'underdog'
     filt = df.loc[df['winningOdds']<0.5]
-    filt = filt.sort_values('runDiff', ascending=False)
+    filt = filt.sort_values(['runDiff', 'winningScore'], ascending=[False, False])
     return (reason, filt)
 
 
