@@ -1,3 +1,11 @@
+# v1.0
+
+* use blaseball-core-game-data
+
+# v0.9.5
+
+* sort underdogs by descending run differential, then by descending number of winning runs
+
 # v0.9.4
 
 * Adjust score column
