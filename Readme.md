@@ -322,7 +322,7 @@ cone filter.
 
 * Add close games (1 run - sorted by score, low to hi or hi to low?)
     * maxedout - high-scoring, one-run games
-    * nailbiter - low-scoring, one-run games
+    * defensive - low-scoring, one-run games
 
 ## Libraries Used
 
