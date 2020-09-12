@@ -35,8 +35,8 @@ make dist || { echo "Failed make dist step"; exit 1; }
 make distcheck || { echo "Failed make distcheck step"; exit 1; }
 
 echo "Everything checks out. Uploading to testpypi, then pypi..."
-make testpypi || {echo "Failed make testpypi step"; exit 1; }
-make pypi || {echo "Failed make pypi step"; exit 1; }
+make testpypi || { echo "Failed make testpypi step"; exit 1; }
+make pypi || { echo "Failed make pypi step"; exit 1; }
 echo "Done!"
 
 echo "Making git tag"

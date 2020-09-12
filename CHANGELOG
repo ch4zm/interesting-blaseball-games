@@ -1,10 +1,11 @@
 # v1.0
 
-* use blaseball-core-game-data
+* Automated release process
+* Use blaseball-core-game-data
 
 # v0.9
 
-* sort underdogs by descending run differential, then by descending number of winning runs
+* Sort underdogs by descending run differential, then by descending number of winning runs
 * Adjust score column
 * Change column layouts
 * Hotfix for cli option
