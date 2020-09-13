@@ -1,17 +1,21 @@
 help:
 	cat Makefile
 
+
+# dependencies
 requirements:
 	python3 -m pip install --upgrade -r requirements.txt
 
 dev:
 	python3 -m pip install --upgrade -r requirements-dev.txt
 
-testpypi: dist
-	twine upload --repository testpypi dist/* --verbose
 
+# build
 pypi: dist
 	twine upload --repository pypi dist/*
+
+testpypi: dist
+	twine upload --repository testpypi dist/* --verbose
 
 distcheck: dist
 	twine check dist/*

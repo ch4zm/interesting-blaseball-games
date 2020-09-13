@@ -149,8 +149,7 @@ interesting-blaseball-games --season 1 --season 2 --team Sunbeams --team Tigers 
 we could create a configuration file named `config.ini` with the contents:
 
 ```
-season = 1
-season = 2
+season = [1, 2]
 team = Sunbeams
 team = Tigers
 postseason
@@ -321,20 +320,15 @@ cone filter.
 
 ## Future work
 
-* Build other one-off tools to do the following:
-
-* Explore the 3-game series
-
-* Explore pitchers
-
-* Dive into play-by-play data to drill into more interesting
-  scenarios like no-hitters, hitting streaks, and home run records.
-
+* Add close games (1 run - sorted by score, low to hi or hi to low?)
+    * maxedout - high-scoring, one-run games
+    * defensive - low-scoring, one-run games
 
 ## Libraries Used
 
 This command line tool uses the following libraries under the hood:
 
+* [blaseball-core-game-data](https://github.com/ch4zm/blaseball-core-game-data)
 * [rich](https://github.com/willmcgugan/rich) for formatting text and tables
 * [pandas](https://pandas.pydata.org/) for organizing/filtering data
 * [configarparse](https://github.com/bw2/ConfigArgParse) for handling CLI arguments

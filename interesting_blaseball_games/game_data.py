@@ -51,13 +51,34 @@ def underdog(df):
     return (reason, filt)
 
 
+def maxedout(df):
+    """
+    Filter the dataframe of game data on maxedout wins
+    (high-scoring games where the run differential is 1)
+    Returns: tuple (string reason, pd dataframe)
+    """
+    reason = 'maxedout'
+    filt = df.loc[df['runDiff']==1]
+    filt = filt.sort_values(['winningScore','season','day'], ascending=[False, True, True])
+    return (reason, filt)
+
+
+def defensive(df):
+    reason = 'maxedout'
+    filt = df.loc[df['runDiff']==1]
+    filt = filt.sort_values(['winningScore','season','day'], ascending=[True, True, True])
+    return (reason, filt)
+
+
 # Map reason strings to their corresponding filter function
 REASON2FUNCTION = {
     "blowout": [blowout],
     "shutout": [shutout],
     "shame": [shame],
     "underdog": [underdog],
-    "all": [blowout, shutout, shame, underdog],
+    "maxedout": [maxedout],
+    "defensive": [defensive],
+    "all": [blowout, shutout, shame, underdog, maxedout, defensive],
 }
 
 
