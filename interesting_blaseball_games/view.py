@@ -2,7 +2,7 @@ import time
 import os
 from rich.console import Console
 from rich.table import Table
-from .game_data import GameData
+from .game_data import GameData, REASON2FUNCTION
 from .util import (
     sanitize_dale,
     get_league_division_team_data
@@ -62,6 +62,12 @@ class View(object):
             desc = "Shame games (games where the loser was shamed) "
         elif reason == 'underdog':
             desc = "Underdog games (games where the underdog won with large run differential) "
+        elif reason == 'maxedout':
+            desc = "Maxed out games (high-scoring one-run games) "
+        elif reason == 'defensive':
+            desc = "Defensive games (low-scoring one-run games) "
+        else:
+            raise Exception("Error: reason not recognized. Valid reasons: %s"%(", ".join(list(REASON2FUNCTION.keys()))))
 
         if 'all' in options.season:
             desc += "for all time "
