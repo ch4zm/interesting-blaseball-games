@@ -9,6 +9,10 @@ If your version number is 0.1, it will bump it to 0.2.
 If your version number is 0.0.1, it will bump it to 0.0.2.
 """
 
+
+pkg_name = 'interesting_blaseball_games'
+
+
 def usage():
     print("")
     print("Bump version number script:")
@@ -23,7 +27,7 @@ def usage():
 
 def main(args):
     root_path = os.path.abspath(os.path.join(os.path.dirname(__file__)))
-    init_path = os.path.abspath(os.path.join(root_path, '..', 'interesting_blaseball_games'))
+    init_path = os.path.abspath(os.path.join(root_path, '..', pkg_name))
     INIT = "__init__.py"
     
     with open(os.path.join(init_path, INIT), 'r') as f:
