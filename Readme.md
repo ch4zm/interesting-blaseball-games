@@ -28,7 +28,6 @@ a series of tables containing game summaries.
 * [Scripts](#scripts)
 * [Software architecture](#software-architecture)
 * [Who is this tool for?](#who-is-this-tool-for)
-* [I want to open a pull request to add feature X\!](#i-want-to-open-a-pull-request-to-add-feature-x)
 * [Future work](#future-work)
 * [Libraries Used](#libraries-used)
 
@@ -297,25 +296,6 @@ This tool is for the blaseball community. It will be useful to people
 interested in exploring game data, people who are brainstorming about
 lore for their team, and people who are looking for a starting point
 for developing their own blaseball tool.
-
-
-## I want to open a pull request to add feature X!
-
-No.
-
-Adding more views and more filters will make this tool more
-complicated and less fun, so if you have different questions
-about this data set, try building a tool of your own using this
-repository as a template.
-
-At the core of this program is a simple idea: bundle a data frame
-with a few filters, give the user the ability to apply different
-filters using command line flags, and pass the final data frame
-through a nice table viewer.
-
-There are no tests. There is no Travis CI. There is no linting.
-This library is not a fancy espresso machine, it's a pour-over
-cone filter.
 
 
 ## Future work
