@@ -1,3 +1,9 @@
+# v1.1
+
+* Add/upgrade deploy scripts
+* Changes to command line args
+* Bug fixes
+
 # v1.0
 
 * Automated release process
