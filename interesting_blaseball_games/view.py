@@ -98,7 +98,7 @@ class View(object):
             else:
                 desc += "for teams %s"%(", ".join(options.team))
 
-        desc += " (note: all days and seasons displayed are 1-indexed, asterisk indicates a postseason game)"
+        desc += " (note: all days and seasons displayed are 1-indexed)"
         return desc
 
     def assemble_column_headers(self, options):
@@ -138,9 +138,17 @@ class View(object):
                 column_names.append('winningTeamEmoji')
             nice_column_names.append("Winner")
 
+            # W odds (not printed)
+            column_names.append("winningOdds")
+            nice_column_names.append("W Odds")
+
             # Score
             column_names.append('winningLosingScore')
             nice_column_names.append("Score")
+
+            # L odds (not printed)
+            column_names.append("losingOdds")
+            nice_column_names.append("L Odds")
 
             # Losing team name
             if options.name_style=='long':
@@ -172,9 +180,17 @@ class View(object):
                 column_names.append('homeTeamEmoji')
             nice_column_names.append("Home")
 
+            # H odds (not printed)
+            column_names.append("homeOdds")
+            nice_column_names.append("A Odds")
+
             # Score
             column_names.append('homeAwayScore')
             nice_column_names.append("Score")
+
+            # A odds (not printed)
+            column_names.append("awayOdds")
+            nice_column_names.append("A Odds")
 
             # Away team name
             if options.name_style=='long':
@@ -262,9 +278,9 @@ class RichView(View):
         for table in tables:
             reason, df = table
             desc = self.table_description(reason)
-            self._render_table(desc, df)
+            self._render_table(desc, df, reason)
 
-    def _render_table(self, description, df):
+    def _render_table(self, description, df, reason):
         """
         Render a table using rich
         """
@@ -277,6 +293,27 @@ class RichView(View):
         new_season_column = cut['season'].apply(plusone)
         new_game_column = cut['day'].apply(plusone)
         cut = cut.assign(**{'season': new_season_column, 'day': new_game_column})
+
+        if self.options.win_loss:
+            pre = ['winning','losing']
+        else:
+            pre = ['home','away']
+        namelabels = [j + 'TeamNickname' for j in pre]
+        oddslabels = [j + 'Odds' for j in pre]
+
+        # Replace Team with Team (X%)
+        if reason=='underdog':
+            # Eventually we may want to do this with ALL reasons
+            for namelabel, oddslabel in zip(namelabels, oddslabels):
+                addodds = lambda row: "%s (%d%%)"%(row[namelabel], round(100*row[oddslabel]))
+                cut[namelabel] = cut[[namelabel, oddslabel]].apply(addodds, axis=1)
+
+        # Remove the odds columns
+        cut.drop(oddslabels, axis=1, inplace=True)
+
+        # Remove the odds headers
+        self.column_headers = [j for j in self.column_headers if 'Odds' not in j]
+        self.nice_column_headers = [j for j in self.nice_column_headers if 'Odds' not in j]
 
         # Format the isPostseason column for printing (empty space if not, else Y)
         postseason_lambda = lambda c: ' ' if c is False else 'Y'
@@ -333,6 +370,7 @@ class MarkdownView(View):
         for table in tables:
             reason, df = table
             desc = self.table_description(reason)
+            desc += " (asterisk indicates a postseason game)"
             self._render_table(desc, df)
 
     def _render_table(self, description, df):
