@@ -153,12 +153,12 @@ def main(sysargs = sys.argv[1:]):
     # -----
 
     # Print help, if no arguments provided
-    if len(sys.argv[1:])==0:
+    if len(sysargs)==0:
         p.print_help()
         exit(0)
 
     # Parse arguments
-    options = p.parse_args(sys.argv[1:])
+    options = p.parse_args(sysargs)
 
     # If the user asked for the version,
     # print the version number and exit.
