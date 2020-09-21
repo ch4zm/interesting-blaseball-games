@@ -46,7 +46,7 @@ def underdog(df):
     Returns: tuple (string reason, pd dataframe)
     """
     reason = 'underdog'
-    filt = df.loc[df['winningOdds']<0.5]
+    filt = df.loc[df['winningOdds']<0.46]
     filt = filt.sort_values(['runDiff', 'winningScore'], ascending=[False, False])
     return (reason, filt)
 
