@@ -227,6 +227,28 @@ class HtmlView(View):
             new_game_column = cut['day'].apply(plusone)
             cut = cut.assign(**{'season': new_season_column, 'day': new_game_column})
 
+            # Create name and odds labels
+            if self.options.win_loss:
+                pre = ['winning','losing']
+            else:
+                pre = ['home','away']
+            namelabels = [j + 'TeamNickname' for j in pre]
+            oddslabels = [j + 'Odds' for j in pre]
+
+            # Replace Team with Team (X%)
+            if reason=='underdog':
+                # Eventually we may want to do this with ALL reasons
+                for namelabel, oddslabel in zip(namelabels, oddslabels):
+                    addodds = lambda row: "%s (%d%%)"%(row[namelabel], round(100*row[oddslabel]))
+                    cut[namelabel] = cut[[namelabel, oddslabel]].apply(addodds, axis=1)
+
+            # Remove the odds columns
+            cut.drop(oddslabels, axis=1, inplace=True)
+
+            # Remove the odds headers
+            self.column_headers = [j for j in self.column_headers if 'Odds' not in j]
+            self.nice_column_headers = [j for j in self.nice_column_headers if 'Odds' not in j]
+
             # Format the isPostseason column for printing (empty space if not, else Y)
             postseason_lambda = lambda c: ' ' if c is False else 'Y'
             new_postseason_column = cut['isPostseason'].apply(postseason_lambda)
@@ -294,6 +316,7 @@ class RichView(View):
         new_game_column = cut['day'].apply(plusone)
         cut = cut.assign(**{'season': new_season_column, 'day': new_game_column})
 
+        # Create name and odds labels
         if self.options.win_loss:
             pre = ['winning','losing']
         else:
@@ -371,9 +394,9 @@ class MarkdownView(View):
             reason, df = table
             desc = self.table_description(reason)
             desc += " (asterisk indicates a postseason game)"
-            self._render_table(desc, df)
+            self._render_table(desc, df, reason)
 
-    def _render_table(self, description, df):
+    def _render_table(self, description, df, reason):
         """
         Render a table as a Markdown table
         """
@@ -386,6 +409,28 @@ class MarkdownView(View):
         new_season_column = cut['season'].apply(plusone)
         new_game_column = cut['day'].apply(plusone)
         cut = cut.assign(**{'season': new_season_column, 'day': new_game_column})
+
+        # Create name and odds labels
+        if self.options.win_loss:
+            pre = ['winning','losing']
+        else:
+            pre = ['home','away']
+        namelabels = [j + 'TeamNickname' for j in pre]
+        oddslabels = [j + 'Odds' for j in pre]
+
+        # Replace Team with Team (X%)
+        if reason=='underdog':
+            # Eventually we may want to do this with ALL reasons
+            for namelabel, oddslabel in zip(namelabels, oddslabels):
+                addodds = lambda row: "%s (%d%%)"%(row[namelabel], round(100*row[oddslabel]))
+                cut[namelabel] = cut[[namelabel, oddslabel]].apply(addodds, axis=1)
+
+        # Remove the odds columns
+        cut.drop(oddslabels, axis=1, inplace=True)
+
+        # Remove the odds headers
+        self.column_headers = [j for j in self.column_headers if 'Odds' not in j]
+        self.nice_column_headers = [j for j in self.nice_column_headers if 'Odds' not in j]
 
         # Format the isPostseason column for printing (empty space if not, else Y)
         postseason_lambda = lambda c: '' if c is False else '*'
