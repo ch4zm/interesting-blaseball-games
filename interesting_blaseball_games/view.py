@@ -1,4 +1,5 @@
 import time
+import sys
 import os
 from rich.console import Console
 from rich.table import Table
@@ -321,7 +322,14 @@ class RichView(View):
             pre = ['winning','losing']
         else:
             pre = ['home','away']
-        namelabels = [j + 'TeamNickname' for j in pre]
+
+        if options.name_style=='short':
+            namelabels = [j + 'TeamNickname' for j in pre]
+        elif options.name_style=='long':
+            namelabels = [j + 'TeamName' for j in pre]
+        elif options.name_style=='emoji':
+            namelabels = [j + 'TeamEmoji' for j in pre]
+
         oddslabels = [j + 'Odds' for j in pre]
 
         # Replace Team with Team (X%)
@@ -329,7 +337,12 @@ class RichView(View):
             # Eventually we may want to do this with ALL reasons
             for namelabel, oddslabel in zip(namelabels, oddslabels):
                 addodds = lambda row: "%s (%d%%)"%(row[namelabel], round(100*row[oddslabel]))
-                cut[namelabel] = cut[[namelabel, oddslabel]].apply(addodds, axis=1)
+                try:
+                    cut[namelabel] = cut[[namelabel, oddslabel]].apply(addodds, axis=1)
+                except KeyError:
+                    print(cut.columns)
+                    print(cut)
+                    sys.exit(1)
 
         # Remove the odds columns
         cut.drop(oddslabels, axis=1, inplace=True)
@@ -415,7 +428,14 @@ class MarkdownView(View):
             pre = ['winning','losing']
         else:
             pre = ['home','away']
-        namelabels = [j + 'TeamNickname' for j in pre]
+
+        if self.options.name_style=='short':
+            namelabels = [j + 'TeamNickname' for j in pre]
+        elif self.options.name_style=='long':
+            namelabels = [j + 'TeamName' for j in pre]
+        elif self.options.name_style=='emoji':
+            namelabels = [j + 'TeamEmoji' for j in pre]
+
         oddslabels = [j + 'Odds' for j in pre]
 
         # Replace Team with Team (X%)
@@ -423,7 +443,13 @@ class MarkdownView(View):
             # Eventually we may want to do this with ALL reasons
             for namelabel, oddslabel in zip(namelabels, oddslabels):
                 addodds = lambda row: "%s (%d%%)"%(row[namelabel], round(100*row[oddslabel]))
-                cut[namelabel] = cut[[namelabel, oddslabel]].apply(addodds, axis=1)
+                try:
+                    cut[namelabel] = cut[[namelabel, oddslabel]].apply(addodds, axis=1)
+                except KeyError:
+                    print(cut.columns)
+                    print(cut)
+                    sys.exit(1)
+
 
         # Remove the odds columns
         cut.drop(oddslabels, axis=1, inplace=True)
