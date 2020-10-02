@@ -10,7 +10,7 @@ def blowout(df):
     Returns: tuple (string reason, dataframe tabledata)
     """
     reason = 'blowout'
-    filt = df.sort_values(['winningScore', 'runDiff'], ascending=[False, False])
+    filt = df.sort_values(['winningScore', 'runDiff', 'season', 'day'], ascending=[False, False, True, True])
     return (reason, filt)
 
 
@@ -22,7 +22,7 @@ def shutout(df):
     """
     reason = 'shutout'
     filt = df.loc[df['losingScore']==0]
-    filt = filt.sort_values('runDiff', ascending=False)
+    filt = filt.sort_values(['runDiff', 'season', 'day'], ascending=[False, True, True])
     return (reason, filt)
 
 
@@ -35,7 +35,7 @@ def shame(df):
     """
     reason = 'shame'
     filt = df.loc[df['shame']==True]
-    filt = filt.sort_values(['runDiff', 'winningScore'], ascending=[False, False])
+    filt = filt.sort_values(['runDiff', 'winningScore', 'season', 'day'], ascending=[False, False, True, True])
     return (reason, filt)
 
 
