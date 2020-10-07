@@ -2,13 +2,11 @@ import sys
 import os
 import json
 import configargparse
-from .view import NAMESTYLE_CHOICES, HtmlView, RichView, MarkdownView
+from .view import NAMESTYLE_CHOICES, RichView, MarkdownView
 from .game_data import REASON2FUNCTION
 from .util import (
     root_path, 
     data_path,
-    sanitize_dale,
-    desanitize_dale,
     get_league_division_team_data,
     league_to_teams,
     division_to_teams
@@ -40,7 +38,7 @@ def main(sysargs = sys.argv[1:]):
 
     p = configargparse.ArgParser()
 
-    # These are safe for command line usage (no accent in Dale)
+    # These are safe for command line usage
     LEAGUES, DIVISIONS, ALLTEAMS = get_league_division_team_data()
 
     p.add('-v',
@@ -109,10 +107,6 @@ def main(sysargs = sys.argv[1:]):
           action='store_true',
           default=True,
           help='Print data using rich to format tables (default)')
-    p.add('--html',
-          action='store_true',
-          default=False,
-          help='Print data in HTML table format')
     p.add('--markdown',
           action='store_true',
           default=False,
@@ -121,7 +115,7 @@ def main(sysargs = sys.argv[1:]):
           required=False,
           type=str,
           default='',
-          help='Specify the name of the HTML or Markdown output file, for use with --html or --markdown flags')
+          help='Specify the name of the Markdown output file, for use with --markdown flags')
 
     # View options for columns
     g = p.add_mutually_exclusive_group()
@@ -195,13 +189,7 @@ def main(sysargs = sys.argv[1:]):
         except ValueError:
             raise Exception("Error: you must provide integers to the --season flag: --season 1 --season 2")
 
-    # No more user input required, so convert Dale back to utf8
-    options.team = [desanitize_dale(x) for x in options.team]
-
-    if options.html:
-        v = HtmlView(options)
-        v.make_table()
-    elif options.markdown:
+    if options.markdown:
         v = MarkdownView(options)
         v.make_table()
     else:

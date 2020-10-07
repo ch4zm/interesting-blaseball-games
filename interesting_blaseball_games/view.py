@@ -23,7 +23,6 @@ class View(object):
         self.game_data = GameData(options)
         self.column_headers, self.nice_column_headers = self.assemble_column_headers(options)
         self.name_style = options.name_style
-        self.html = options.html
 
         # For table description
         self.options = options
@@ -81,23 +80,13 @@ class View(object):
         if options.postseason :
             desc += "(postseason only) "
 
-        # Remember: ALLTEAMS is sanitized for the command line, options.teams is desanitized (contains unicode)
         _, _, ALLTEAMS = get_league_division_team_data()
-        if options.html:
-            # Need to sanitize Dale team name for html
-            if len(options.team)==1:
-                desc += "for team %s"%("".join([sanitize_dale(j) for j in options.team]))
-            elif len(set(ALLTEAMS) - set([sanitize_dale(j) for j in options.team])) == 0:
-                desc += "for all teams"
-            else:
-                desc += "for teams %s"%(", ".join([sanitize_dale(j) for j in options.team]))
+        if len(options.team)==1:
+            desc += "for team %s"%("".join(options.team))
+        elif len(set(ALLTEAMS) - set(options.team)) == 0:
+            desc += "for all teams"
         else:
-            if len(options.team)==1:
-                desc += "for team %s"%("".join(options.team))
-            elif len(set(ALLTEAMS) - set([sanitize_dale(j) for j in options.team])) == 0:
-                desc += "for all teams"
-            else:
-                desc += "for teams %s"%(", ".join(options.team))
+            desc += "for teams %s"%(", ".join(options.team))
 
         desc += " (note: all days and seasons displayed are 1-indexed)"
         return desc
@@ -210,83 +199,6 @@ class View(object):
         return (column_names, nice_column_names)
 
 
-class HtmlView(View):
-    """
-    Create a table and render it using Panda's to_html function
-    """
-    def make_table(self):
-        tables = self.game_data.parse()
-        for table in tables:
-            reason, df = table
-            desc = self.table_description(reason)
-            cut = df[self.column_headers][:min(len(df), self.nresults)].copy()
-
-            # Bump season and game numbers by one (zero-indexed in dataframe)
-            # (Pandas is soooo intuitive)
-            plusone = lambda x : x + 1
-            new_season_column = cut['season'].apply(plusone)
-            new_game_column = cut['day'].apply(plusone)
-            cut = cut.assign(**{'season': new_season_column, 'day': new_game_column})
-
-            # Create name and odds labels
-            if self.options.win_loss:
-                pre = ['winning','losing']
-            else:
-                pre = ['home','away']
-            namelabels = [j + 'TeamNickname' for j in pre]
-            oddslabels = [j + 'Odds' for j in pre]
-
-            # Replace Team with Team (X%)
-            if reason=='underdog':
-                # Eventually we may want to do this with ALL reasons
-                for namelabel, oddslabel in zip(namelabels, oddslabels):
-                    addodds = lambda row: "%s (%d%%)"%(row[namelabel], round(100*row[oddslabel]))
-                    cut[namelabel] = cut[[namelabel, oddslabel]].apply(addodds, axis=1)
-
-            # Remove the odds columns
-            cut.drop(oddslabels, axis=1, inplace=True)
-
-            # Remove the odds headers
-            self.column_headers = [j for j in self.column_headers if 'Odds' not in j]
-            self.nice_column_headers = [j for j in self.nice_column_headers if 'Odds' not in j]
-
-            # Format the isPostseason column for printing (empty space if not, else Y)
-            postseason_lambda = lambda c: ' ' if c is False else 'Y'
-            new_postseason_column = cut['isPostseason'].apply(postseason_lambda)
-            cut = cut.assign(**{'isPostseason': new_postseason_column.values})
-
-            # Sanitize Dale uicode for HTML
-            name_cols = [
-                'winningTeamName', 'winningTeamNickname', 
-                'losingTeamName', 'losingTeamNickname',
-                'homeTeamName', 'homeTeamNickname',
-                'awayTeamName', 'awayTeamNickname'
-            ]
-            for name_col in name_cols:
-                if name_col in cut.columns:
-                    cut[name_col] = cut[name_col].apply(sanitize_dale)
-
-            # Make everything in the dataframe a string
-            cut = cut.applymap(str)
-
-            # Rename df columns
-            ren = {k: v for k, v in zip(self.column_headers, self.nice_column_headers)}
-            cut.rename(columns = ren, inplace=True)
-
-            result = cut.to_html(justify='center', border=1, index=False)
-            if self.output_file is None:
-                print("<p>"+desc+"</p>\n")
-                print("<br />")
-                print(result)
-                print("<br /><br />")
-            else:
-                with open(self.output_file, 'a') as f:
-                    f.write("<p>"+desc+"</p>\n")
-                    f.write("<br />\n")
-                    f.write(result)
-                    f.write("<br /><br />\n")
-
-
 class RichView(View):
     """
     Create a table and render it using rich
@@ -323,11 +235,11 @@ class RichView(View):
         else:
             pre = ['home','away']
 
-        if options.name_style=='short':
+        if self.options.name_style=='short':
             namelabels = [j + 'TeamNickname' for j in pre]
-        elif options.name_style=='long':
+        elif self.options.name_style=='long':
             namelabels = [j + 'TeamName' for j in pre]
-        elif options.name_style=='emoji':
+        elif self.options.name_style=='emoji':
             namelabels = [j + 'TeamEmoji' for j in pre]
 
         oddslabels = [j + 'Odds' for j in pre]
