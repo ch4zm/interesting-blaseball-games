@@ -25,7 +25,6 @@ a series of tables containing game summaries.
 * [Output formats](#output-formats)
 * [Configuration Examples](#configuration-examples)
 * [Data](#data)
-* [Scripts](#scripts)
 * [Software architecture](#software-architecture)
 * [Who is this tool for?](#who-is-this-tool-for)
 * [Future work](#future-work)
@@ -278,7 +277,7 @@ output = alltime_blowouts.md
 ## Data
 
 The data set used by this tool comes from `blaseball.com`'s `/games` API endpoint.
-The data set is imported from [`blaseball-core-game-data`](https://githib.com/ch4zm/blaseball-core-game-data).
+The data set is imported from [`blaseball-core-game-data`](https://github.com/ch4zm/blaseball-core-game-data).
 
 
 ## Software architecture
