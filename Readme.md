@@ -66,7 +66,8 @@ Finally, information is organized in an intuitive and readable way:
 ### pip
 
 ```
-pip install interesting-blaseball-games
+pip install git+https://github.com/ch4zm/blaseball-core-game-data.git#egg=blaseball_core_game_data
+pip install git+https://github.com/ch4zm/interesting-blaseball-games.git#egg=interesting_blaseball_games
 ```
 
 ### source
